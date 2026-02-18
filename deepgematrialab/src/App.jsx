@@ -2,9 +2,39 @@
 import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import PasukView from "./components/PasukView";
+import Indice from "./components/Indice.jsx";
 import fondo from "./assets/fondo.png";
 import "./styles.css";
-import Tester from "./components/Tester";
+import WordView from "./views/WordView.jsx";
+
+
+// Función para calcular la parashá de hoy
+function getParashaOfToday() {
+  // Aquí puedes poner tu lógica real o una API
+  // Por ahora vamos a usar un array fijo de ejemplo
+  const parashot = [
+    "Bereshit",
+    "Noach",
+    "Lech-Lecha",
+    "Vayera",
+    "Chayei Sara",
+    "Toldot",
+    "Vayetzei",
+    "Vayishlach",
+    "Vayeshev",
+    "Miketz",
+    "Vayigash",
+    "Vayechi",
+  ];
+
+  const today = new Date();
+  const dayOfYear =
+    Math.floor(
+      (today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24
+    ) % parashot.length;
+
+  return parashot[dayOfYear];
+}
 
 function SparklesCanvas() {
   useEffect(() => {
@@ -17,10 +47,7 @@ function SparklesCanvas() {
 
     const particles = [];
     const N = 45;
-
-    function rand(min, max) {
-      return Math.random() * (max - min) + min;
-    }
+    const rand = (min, max) => Math.random() * (max - min) + min;
 
     for (let i = 0; i < N; i++) {
       particles.push({
@@ -35,7 +62,6 @@ function SparklesCanvas() {
 
     function step() {
       ctx.clearRect(0, 0, W, H);
-
       for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy;
@@ -51,7 +77,6 @@ function SparklesCanvas() {
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
       }
-
       requestAnimationFrame(step);
     }
 
@@ -71,17 +96,39 @@ function SparklesCanvas() {
 
 export default function App() {
   const [route, setRoute] = useState(window.location.hash);
+  const [selectedWord, setSelectedWord] = useState(null);
 
-useEffect(() => {
-  const onHashChange = () => setRoute(window.location.hash);
-  window.addEventListener("hashchange", onHashChange);
-  return () => window.removeEventListener("hashchange", onHashChange);
-}, []);
 
-if (route.startsWith("#/tester"))  {
-  return <Tester />;
+  useEffect(() => {
+    const onHashChange = () => setRoute(window.location.hash);
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
+
+  // --- ROUTING ---
+  if (route.startsWith("#/tester")) {
+    return <Tester />;
+  }
+
+  // Para home o cualquier #/parasha
+  let parashaName = getParashaOfToday(); // La de hoy
+  let pasukNumber = 1; // siempre arranca en 1
+
+  if (route.startsWith("#/parasha")) {
+    const clean = route.replace("#/parasha", "").replace(/^\/+/, "");
+    const parts = clean ? clean.split("/") : [];
+
+    if (parts[0]) parashaName = decodeURIComponent(parts[0]);
+    if (parts[1]) pasukNumber = Number(parts[1]);
+  }
+
+  if (route.startsWith("#/indice") || route === "") {
+  // mostramos el home / índice de parashot
+  return <Indice />;
 }
+
   return (
+    <>
     <div
       className="app-root"
       style={{
@@ -94,10 +141,7 @@ if (route.startsWith("#/tester"))  {
     >
       <div className="background-layer" />
 
-      <Header
-        parasha="Va'era"
-        hebDate="Shemot 6-9 · 3 Shevat 5786"
-      />
+      <Header parasha={parashaName} hebDate="Shemot 6-9 · 3 Shevat 5786" />
 
       <SparklesCanvas />
 
@@ -105,10 +149,19 @@ if (route.startsWith("#/tester"))  {
         <section className="panel">
           <h2>Parashá — Lectura por pasuk</h2>
           <PasukView
-            pasuk={"וַיֹּאמֶר יְהוָה אֶל־מֹשֶׁה כִּי בְעָפָה כִּי גֵדַע"}
+            parashaName={parashaName}
+            pasukNumber={pasukNumber}
+            onWordClick={(w) => setSelectedWord(w)}
           />
         </section>
       </main>
     </div>
+    {selectedWord && (
+  <WordView
+    word={selectedWord}
+    onClose={() => setSelectedWord(null)}
+  />
+)}
+    </>
   );
 }
