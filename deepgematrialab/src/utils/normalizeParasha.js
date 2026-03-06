@@ -24,3 +24,4 @@ export function displayFromRouteSegment(seg) {
   // decodeURIComponent y guiones/underscores → espacios
   return decodeURIComponent(seg).replace(/[_\-]+/g, " ").trim();
 }
+//
