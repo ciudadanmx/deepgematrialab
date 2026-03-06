@@ -54,7 +54,14 @@ body,html,#root{height:100%;margin:0;font-family: Inter, system-ui, 'Segoe UI', 
   z-index:5;
   background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.10));
 }
-.app-header .logo{height:42px}
+.app-header {height:42px}
+.logo { 
+    height: 82px;
+    width: 140px;
+    position: absolute;
+    right: 20%;
+    top: -4px;
+}
 .parasha-name{font-weight:700;color:var(--brand-yellow);letter-spacing:1px}
 .heb-date{opacity:0.9}
 

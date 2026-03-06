@@ -6,6 +6,7 @@ import Indice from "./components/Indice.jsx";
 import fondo from "./assets/fondo.png";
 import "./styles.css";
 import WordView from "./views/WordView.jsx";
+import { displayFromRouteSegment } from "./utils/normalizeParasha";
 
 
 // Función para calcular la parashá de hoy
@@ -17,7 +18,7 @@ function getParashaOfToday() {
     "Noach",
     "Lech-Lecha",
     "Vayera",
-    "Chayei Sara",
+    "Chayei-Sara",
     "Toldot",
     "Vayetzei",
     "Vayishlach",
@@ -98,6 +99,16 @@ export default function App() {
   const [route, setRoute] = useState(window.location.hash);
   const [selectedWord, setSelectedWord] = useState(null);
 
+  let parashaName = getParashaOfToday(); // La de hoy (string)
+let pasukNumber = 1; // siempre arranca en 1
+
+if (route.startsWith("#/parasha")) {
+  const clean = route.replace("#/parasha", "").replace(/^\/+/, "");
+  const parts = clean ? clean.split("/") : [];
+
+  if (parts[0]) parashaName = displayFromRouteSegment(parts[0]);
+  if (parts[1]) pasukNumber = Number(parts[1]) || 1;
+}
 
   useEffect(() => {
     const onHashChange = () => setRoute(window.location.hash);
@@ -111,8 +122,8 @@ export default function App() {
   }
 
   // Para home o cualquier #/parasha
-  let parashaName = getParashaOfToday(); // La de hoy
-  let pasukNumber = 1; // siempre arranca en 1
+  parashaName = getParashaOfToday(); // La de hoy
+  pasukNumber = 1; // siempre arranca en 1
 
   if (route.startsWith("#/parasha")) {
     const clean = route.replace("#/parasha", "").replace(/^\/+/, "");
@@ -149,10 +160,10 @@ export default function App() {
         <section className="panel">
           <h2>Parashá — Lectura por pasuk</h2>
           <PasukView
-            parashaName={parashaName}
-            pasukNumber={pasukNumber}
-            onWordClick={(w) => setSelectedWord(w)}
-          />
+  parashaName={parashaName}
+  pasukNumber={pasukNumber}
+  onWordClick={(w) => setSelectedWord(w)}
+/>
         </section>
       </main>
     </div>

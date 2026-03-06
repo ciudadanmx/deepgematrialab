@@ -7,7 +7,7 @@ const PARASHOT = [
   { name: "Noach", pasukCount: 35 },
   { name: "Lech-Lecha", pasukCount: 25 },
   { name: "Vayera", pasukCount: 32 },
-  { name: "Chayei Sara", pasukCount: 23 },
+  { name: "Chayei-Sara", pasukCount: 23 },
   { name: "Toldot", pasukCount: 28 },
   { name: "Vayetzei", pasukCount: 30 },
   { name: "Vayishlach", pasukCount: 33 },
